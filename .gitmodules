@@ -1,0 +1,6 @@
+[submodule "PoissonRecon"]
+	path = PoissonRecon
+	url = git@github.com:mingilikesmangos/PoissonRecon.git
+[submodule "nanobind"]
+	path = nanobind
+	url = https://github.com/wjakob/nanobind.git
