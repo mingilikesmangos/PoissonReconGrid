@@ -55,7 +55,7 @@ private:
 };
 
 // Implement poisson_reconstruction_grid function
-nb::ndarray<nb::numpy, Real> poisson_reconstruction_grid(
+  nb::ndarray<nb::numpy, Real, nb::ndim<3>>poisson_reconstruction_grid(
     nb::ndarray<nb::numpy, Real> points,
     nb::ndarray<nb::numpy, Real> normals,
     int depth = 8
@@ -91,38 +91,19 @@ nb::ndarray<nb::numpy, Real> poisson_reconstruction_grid(
     bool primalGrid = false;
     Real* values = implicit.tree.template regularGridEvaluate<true>(implicit.solution, res, -1, primalGrid);
 
-    // Create an ndarray to hold the grid values
-    //nb::ndarray<nb::numpy, Real> grid = nb::ndarray<nb::numpy, Real> ({ static_cast<size_t>(res), static_cast<size_t>(res), static_cast<size_t>(res) });
-    // nb::ndarray grid = nb::ndarray(
-    //     nb::dtype<Real>(),
-    //     { static_cast<size_t>(res), static_cast<size_t>(res), static_cast<size_t>(res) }
-    // );
-
-    // // Copy the values into the grid
-    // std::memcpy(grid.data(), values, sizeof(Real) * res * res * res);
-
-    // // Clean up
-    // delete[] values;
-
     // Create an ndarray directly from the 'values' array
     size_t res_size = static_cast<size_t>(res);
-    std::vector<size_t> shape = { res_size, res_size, res_size };
-    std::vector<size_t> strides = {
-        sizeof(Real) * res_size * res_size,
-        sizeof(Real) * res_size,
-        sizeof(Real)
-    };
     
-    auto capsule = nb::capsule(values, [](void *data) {
+    // NB: Mingi, don't forget noexcept here
+    nb::capsule owner(values, [](void *data) noexcept {
         delete[] static_cast<Real*>(data);
     });
 
-    nb::ndarray grid = nb::ndarray(
-        values,
-        nb::dtype<Real>(),
-        shape,
-        strides,
-        capsule
+    auto grid = nb::ndarray<nb::numpy, Real, nb::ndim<3>>(
+        /* data = */ values,
+        /* shape = */ { res_size, res_size, res_size },
+        /* owner = */ owner
+        /* NB: If you want to change the stride, do it here! I don't know how what the layout of your data is above ;)  */
     );
 
     // Return the grid

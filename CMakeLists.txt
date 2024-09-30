@@ -16,10 +16,15 @@ add_subdirectory(nanobind)
 include_directories(${Python_INCLUDE_DIRS})
 include_directories(${Python_NumPy_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/PoissonRecon/Src)  # Include PoissonRecon headers
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/PoissonRecon)  # Include PoissonRecon headers
 
 # Add PoissonRecon source files (adjust as necessary)
 file(GLOB PoissonRecon_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/PoissonRecon/Src/*.cpp
+)
+
+file(GLOB PoissonRecon_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/PoissonRecon/Src/*.h
 )
 
 # Add the library
@@ -36,7 +41,7 @@ set_target_properties(poissonrecongrid PROPERTIES
 
 # Ensure C++17 standard
 set_target_properties(poissonrecongrid PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
 )
 
